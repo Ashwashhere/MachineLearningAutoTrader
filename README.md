@@ -40,8 +40,8 @@
   <li><b>Leakage-Free Imputation:</b> Preprocessing parameters were derived solely from the training partition ($X_{\text{train}}$). Continuous numerical missing values were imputed using median strategies, while categorical missingness was imputed using the mode.</li>
   <li><b>Hybrid Categorical Encoding:</b>
     <ul>
-      <li><b>Low-Cardinality Features ($\le 100$ unique values):</b> Encoded using One-Hot Encoding.</li>
-      <li><b>High-Cardinality Features ($> 100$ unique values, e.g., <code>standard_model</code>):</b> Encoded using Target Encoding (Mean Target Mapping) with smoothed out-of-fold training targets to prevent the curse of dimensionality.</li>
+      <li><b>Low-Cardinality Features (< 100 unique values):</b> Encoded using One-Hot Encoding.</li>
+      <li><b>High-Cardinality Features (> 100 unique values, e.g., <code>standard_model</code>):</b> Encoded using Target Encoding (Mean Target Mapping) with smoothed out-of-fold training targets to prevent the curse of dimensionality.</li>
     </ul>
   </li>
   <li><b>Outlier Clipping & Feature Scaling:</b> Extreme numerical values were clipped at the 1st and 99th percentiles of $X_{\text{train}}$ to prevent distortion. Standard Scaling ($Z$-score normalization) was applied within pipelines to optimize distance-based estimators.</li>
