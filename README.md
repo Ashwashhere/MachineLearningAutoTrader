@@ -24,48 +24,48 @@
 
 <h2>📌 Overview</h2>
 
-<p>This project implements an end-to-end Machine Learning pipeline to predict the selling price of used cars based on the Autotrader "Car Sale Adverts" dataset[cite: 4]. Predicting vehicle market value is a continuous regression task complicated by steep non-linear depreciation curves, heavy right-skewed pricing distributions, and high-cardinality categorical attributes (e.g., specific vehicle makes and standard models)[cite: 4].</p>
+<p>This project implements an end-to-end Machine Learning pipeline to predict the selling price of used cars based on the Autotrader "Car Sale Adverts" dataset. Predicting vehicle market value is a continuous regression task complicated by steep non-linear depreciation curves, heavy right-skewed pricing distributions, and high-cardinality categorical attributes (e.g., specific vehicle makes and standard models).</p>
 
-<p>The primary objective is to build a robust, leakage-free predictive model that minimizes absolute percentage error across various market segments[cite: 4].</p>
+<p>The primary objective is to build a robust, leakage-free predictive model that minimizes absolute percentage error across various market segments.</p>
 
 <hr />
 
 <h2>🧹 Data Exploration & Processing Strategy</h2>
 
-<p>To prepare the raw data for modeling while maintaining strict adherence to machine learning best practices, data processing was decoupled into stateless and stateful operations[cite: 4]:</p>
+<p>To prepare the raw data for modeling while maintaining strict adherence to machine learning best practices, data processing was decoupled into stateless and stateful operations:</p>
 
 <ul>
-  <li><b>Target Transformation (Log Scaling):</b> Car prices and mileages exhibited strong positive right-skewness[cite: 4]. A logarithmic transformation (<code>np.log1p</code>) was applied to the target variable to compress scale, stabilize variance, and optimize algorithms for percentage-based evaluation[cite: 4].</li>
-  <li><b>Feature Engineering:</b> A ratio-scale <code>vehicle_age</code> feature was derived from registration data to capture depreciation directly[cite: 4]. Invalid entries (e.g., registration years prior to 1886 or future dates) were cleaned and filtered out[cite: 4].</li>
-  <li><b>Leakage-Free Imputation:</b> Preprocessing parameters were derived solely from the training partition ($X_{\text{train}}$)[cite: 4]. Continuous numerical missing values were imputed using median strategies, while categorical missingness was imputed using the mode[cite: 4].</li>
+  <li><b>Target Transformation (Log Scaling):</b> Car prices and mileages exhibited strong positive right-skewness. A logarithmic transformation (<code>np.log1p</code>) was applied to the target variable to compress scale, stabilize variance, and optimize algorithms for percentage-based evaluation.</li>
+  <li><b>Feature Engineering:</b> A ratio-scale <code>vehicle_age</code> feature was derived from registration data to capture depreciation directly. Invalid entries (e.g., registration years prior to 1886 or future dates) were cleaned and filtered out.</li>
+  <li><b>Leakage-Free Imputation:</b> Preprocessing parameters were derived solely from the training partition ($X_{\text{train}}$). Continuous numerical missing values were imputed using median strategies, while categorical missingness was imputed using the mode.</li>
   <li><b>Hybrid Categorical Encoding:</b>
     <ul>
-      <li><b>Low-Cardinality Features ($\le 100$ unique values):</b> Encoded using One-Hot Encoding[cite: 4].</li>
-      <li><b>High-Cardinality Features ($> 100$ unique values, e.g., <code>standard_model</code>):</b> Encoded using Target Encoding (Mean Target Mapping) with smoothed out-of-fold training targets to prevent the curse of dimensionality[cite: 4].</li>
+      <li><b>Low-Cardinality Features ($\le 100$ unique values):</b> Encoded using One-Hot Encoding.</li>
+      <li><b>High-Cardinality Features ($> 100$ unique values, e.g., <code>standard_model</code>):</b> Encoded using Target Encoding (Mean Target Mapping) with smoothed out-of-fold training targets to prevent the curse of dimensionality.</li>
     </ul>
   </li>
-  <li><b>Outlier Clipping & Feature Scaling:</b> Extreme numerical values were clipped at the 1st and 99th percentiles of $X_{\text{train}}$ to prevent distortion[cite: 4]. Standard Scaling ($Z$-score normalization) was applied within pipelines to optimize distance-based estimators[cite: 4].</li>
-  <li><b>Train / Test Partitioning:</b> An 80/20 train-test split was established using a fixed random seed prior to fitting stateful transformers[cite: 4].</li>
+  <li><b>Outlier Clipping & Feature Scaling:</b> Extreme numerical values were clipped at the 1st and 99th percentiles of $X_{\text{train}}$ to prevent distortion. Standard Scaling ($Z$-score normalization) was applied within pipelines to optimize distance-based estimators.</li>
+  <li><b>Train / Test Partitioning:</b> An 80/20 train-test split was established using a fixed random seed prior to fitting stateful transformers.</li>
 </ul>
 
 <hr />
 
 <h2>⚙️ Modeling Pipeline & Hyperparameter Tuning</h2>
 
-<p>All data transformation steps were encapsulated inside Scikit-Learn <code>Pipeline</code> and <code>ColumnTransformer</code> objects to guarantee zero data leakage during cross-validation and testing[cite: 4]. Four distinct model families were benchmarked and optimized via <code>GridSearchCV</code>[cite: 4]:</p>
+<p>All data transformation steps were encapsulated inside Scikit-Learn <code>Pipeline</code> and <code>ColumnTransformer</code> objects to guarantee zero data leakage during cross-validation and testing. Four distinct model families were benchmarked and optimized via <code>GridSearchCV</code>:</p>
 
 <ol>
-  <li><b>Linear Regression:</b> Evaluated as a baseline benchmark model to test linear feature relationships[cite: 4].</li>
-  <li><b>K-Nearest Neighbors (KNN Regressor):</b> Non-parametric distance estimator tuned for optimal $k$-neighbors ($k=7$) and distance-weighted neighbor scoring[cite: 4].</li>
-  <li><b>Decision Tree Regressor:</b> Non-linear tree-based estimator optimized with a maximum depth limit of 15 and <code>min_samples_leaf=4</code> to curb variance and overfitting[cite: 4].</li>
-  <li><b>Random Forest Regressor:</b> Ensemble bagging architecture tuned across estimators ($n=100$), tree depth ($\text{max\_depth}=20$), and minimum node splits ($\text{min\_samples\_split}=5$) to minimize variance and generalize complex interactions[cite: 4].</li>
+  <li><b>Linear Regression:</b> Evaluated as a baseline benchmark model to test linear feature relationships.</li>
+  <li><b>K-Nearest Neighbors (KNN Regressor):</b> Non-parametric distance estimator tuned for optimal $k$-neighbors ($k=7$) and distance-weighted neighbor scoring.</li>
+  <li><b>Decision Tree Regressor:</b> Non-linear tree-based estimator optimized with a maximum depth limit of 15 and <code>min_samples_leaf=4</code> to curb variance and overfitting.</li>
+  <li><b>Random Forest Regressor:</b> Ensemble bagging architecture tuned across estimators ($n=100$), tree depth ($\text{max\_depth}=20$), and minimum node splits ($\text{min\_samples\_split}=5$) to minimize variance and generalize complex interactions.</li>
 </ol>
 
 <hr />
 
 <h2>📊 Model Evaluation & Results</h2>
 
-<p>Models were evaluated on the unseen test set using R-Squared ($R^2$), Root Mean Squared Error ($\text{RMSE}$), Mean Absolute Error ($\text{MAE}$), and Mean Absolute Percentage Error ($\text{MAPE}$)[cite: 4]. Metrics were converted back from log-space to actual British Pounds (£) for clinical interpretability[cite: 4]:</p>
+<p>Models were evaluated on the unseen test set using R-Squared ($R^2$), Root Mean Squared Error ($\text{RMSE}$), Mean Absolute Error ($\text{MAE}$), and Mean Absolute Percentage Error ($\text{MAPE}$). Metrics were converted back from log-space to actual British Pounds (£) for clinical interpretability:</p>
 
 <table>
   <thead>
@@ -111,21 +111,21 @@
 
 <h3>Key Insights:</h3>
 <ul>
-  <li><b>Predictive Superiority:</b> The <b>Random Forest Regressor</b> achieved the highest accuracy, explaining approximately <b>90% of variance</b> ($R^2 = 0.8997$) in vehicle market price[cite: 4].</li>
-  <li><b>Percentage Error Accuracy:</b> The model achieved a <b>MAPE of 15.58%</b>, demonstrating strong valuation precision across both economy and luxury market segments[cite: 4].</li>
-  <li><b>Residual Stability:</b> Residual plots confirmed homoscedastic error distributions, demonstrating that the ensemble approach successfully eliminated individual tree overfitting[cite: 4].</li>
+  <li><b>Predictive Superiority:</b> The <b>Random Forest Regressor</b> achieved the highest accuracy, explaining approximately <b>90% of variance</b> ($R^2 = 0.8997$) in vehicle market price.</li>
+  <li><b>Percentage Error Accuracy:</b> The model achieved a <b>MAPE of 15.58%</b>, demonstrating strong valuation precision across both economy and luxury market segments.</li>
+  <li><b>Residual Stability:</b> Residual plots confirmed homoscedastic error distributions, demonstrating that the ensemble approach successfully eliminated individual tree overfitting.</li>
 </ul>
 
 <hr />
 
 <h2>💡 Feature Importance & Market Drivers</h2>
 
-<p>Feature importance extraction from the champion Random Forest Regressor identified the top structural drivers of used vehicle values[cite: 4]:</p>
+<p>Feature importance extraction from the champion Random Forest Regressor identified the top structural drivers of used vehicle values:</p>
 
 <ol>
-  <li><b>Vehicle Age (Year of Registration):</b> The dominant predictor establishing the baseline pricing tier and overall depreciation bracket[cite: 4].</li>
-  <li><b>Mileage:</b> The primary usage metric that adjusts value within a vehicle's specific age group[cite: 4].</li>
-  <li><b>Standard Model / Target Encoded Brand:</b> Critical for distinguishing segment pricing tiers (e.g., Premium vs. Mass Market vehicles)[cite: 4].</li>
+  <li><b>Vehicle Age (Year of Registration):</b> The dominant predictor establishing the baseline pricing tier and overall depreciation bracket.</li>
+  <li><b>Mileage:</b> The primary usage metric that adjusts value within a vehicle's specific age group.</li>
+  <li><b>Standard Model / Target Encoded Brand:</b> Critical for distinguishing segment pricing tiers (e.g., Premium vs. Mass Market vehicles).</li>
 </ol>
 
 <hr />
