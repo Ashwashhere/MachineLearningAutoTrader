@@ -15,7 +15,7 @@
 
   <br />
   <!-- Replace portfolio_thumbnail.png with your visual image file path -->
-  <img src="portfolio_thumbnail.png" alt="Autotrader Car Valuation Project Overview" width="100%" style="border-radius: 8px;" />
+  <img src="https://github.com/Ashwashhere/Ashwashhere/blob/3cdcba2cc56c1751e8b0e2bb6f13a499e0c195f8/atml_portfolio.png" alt="Autotrader Car Valuation Project Overview" width="100%" style="border-radius: 8px;" />
   <br />
 
 </div>
